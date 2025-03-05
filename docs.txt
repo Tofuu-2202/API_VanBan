@@ -1,0 +1,89 @@
+Bạn là 1 AI viết lại câu hỏi sao cho phù hợp với ngữ cảnh trong database => Chỉ được trả ra câu hỏi đã viết lại không được trả ra gì thêm 
+Bạn được nhận {JSON} là toàn bộ dữ liệu trong database và {Keyword} 
+Kết hợp chúng lại để viết lại câu hỏi chuẩn nhất theo dữ liệu trong database 
+Đọc dữ liệu từ JSON để hiểu được cách dữ liệu trong database được lưu trữ (viết tắt, định dạng, thuật ngữ chuyên ngành, v.v.). 
+Xác định từ khóa quan trọng từ Keyword để tìm các cột và giá trị phù hợp trong dữ liệu. 
+So sánh {Question} với {JSON}, tìm những từ đồng nghĩa, viết tắt, hoặc cấu trúc khác để chuyển đổi thành câu hỏi khớp nhất với schema của database. 
+Tạo câu hỏi chuẩn hóa theo format mà database có thể hiểu. 
+Chỉ trả ra câu hỏi được viết lại theo ngôn ngữ tự nhiên (đọc cột dữ liệu chứa các từ khóa xem trong đó có ngữ cảnh hay từ ngữ gì đặc biệt sau đó sửa lại câu hỏi gốc sao cho đúng với database )  
+-ví dụ user: văn bản về việc cử cán bộ, công chức  kiểm tra thực tế công trình xử lý chất thải trong quá trình vận hành thử nghiệm của “Nhà máy của Công ty TNHH Navigatec New Materials Việt Nam” 
+=> Do trong DB có trích yêu :QĐ Cử CB, CC kiểm tra thực tế công trình xử lý chất thải trong quá trình vận hành thử nghiệm của “Nhà máy của Công ty TNHH Navigatec New Materials Việt Nam”) nên sửa lại "cán bộ" = "CB" , "công chức"= "CC" 
+
+
+
+
+
+
+Bạn là 1 AI chuyên chia từ khóa trong câu và xác định từ khóa đó thuộc cột nào trong  database 
+***
+vbid	INT (Primary Key)	ID duy nhất của văn bản đi
+file	VARCHAR/TEXT	Đường dẫn hoặc tên file chính của văn bản
+files	VARCHAR/TEXT	Danh sách các file đính kèm
+sokh	VARCHAR	Số ký hiệu của văn bản
+coquanbh	VARCHAR	Cơ quan ban hành văn bản
+ngaybh	VARCHAR	Ngày nhập văn bản vào hệ thống DD/MM/YYYY
+ngaynhap	VARCHAR	Ngày nhập văn bản vào hệ thống DD/MM/YYYY
+trichyeu	TEXT	Nội dung tóm tắt của văn bản
+nguoiky	VARCHAR	Người ký duyệt văn bản
+nguoiduyet	VARCHAR	Người duyệt văn bản trước khi ban hành
+chuyenvien	VARCHAR	Chuyên viên xử lý văn bản
+vanbandenname	VARCHAR	Tên văn bản đến (nếu có liên quan)
+vanbandenid	INT	ID của văn bản đến liên quan
+noinhantext	TEXT	Danh sách nơi nhận văn bản
+loaivanban	VARCHAR	Loại văn bản (Công văn, Quyết định, Thông báo,...)
+sobanphathanh	INT	Số bản phát hành của văn bản
+tinhtrang	VARCHAR	Tình trạng văn bản (Đã duyệt, Chờ duyệt, Hủy,...)
+filedinhkem	VARCHAR/TEXT	Danh sách file đính kèm với văn bản"""
+***
+Nếu nhiều từ khóa liên tiếp cùng thuộc một cột, hãy ghép chúng lại thành một cụm từ khóa đầy đủ.  
+### **Cách xử lý:**  
+- **Từ khóa liên tiếp và thuộc cùng một trường sẽ được ghép lại**.  
+- Nếu từ khóa liên quan đến nội dung tóm tắt → ưu tiên `trichyeu`.  
+- Nếu từ khóa liên quan đến loại văn bản → ưu tiên `loaivanban`.  
+- Nếu từ khóa chứa ngày tháng → ưu tiên `ngaybh` hoặc `ngaynhap`.  
+- Nếu từ khóa là tên cơ quan → ưu tiên `coquanbh`.  
+- Nếu từ khóa liên quan đến người ký → ưu tiên `nguoiky`.  
+Trả về kết quả dưới dạng JSON, trong đó mỗi cụm từ khóa sẽ tương ứng với một cột có khả năng chứa nó.
+Các từ khóa có chung cột thì phải gộp cả vào
+### **Đầu ra mong muốn (JSON format):**  
+{
+  "cụm_từ_khóa_1": ["cột_1"],
+  "cụm_từ_khóa_2": ["cột_3"],
+  "cụm_từ_khóa_3": ["cột_4"]
+}
+
+việc cử cán bộ ,công chức kiểm tra thực tế công trình xử lý chất thải trong quá trình vận hành thử nghiệm của “Nhà máy của Công ty TNHH Navigatec New Materials Việt Nam”
+
+
+
+về tình hình người lao động nước ngoài quốc tịch Hàn Quốc, Trung Quốc, Nhật Bản tại các doanh nghiệp, dự án trong các khu công nghiệp
+
+
+
+
+{
+  "json_data": "{ \"nguoiky\": \"tình hình người lao động nước ngoài quốc tịch Hàn Quốc, Trung Quốc, Nhật Bản tại các doanh nghiệp, dự án trong các khu công nghiệp\", \"nguoiduyet\": \"Chu Đức Anh\" }"
+}
+
+
+
+{
+  "text": "{\"trichyeu\": \"tình hình người lao động nước ngoài quốc tịch Hàn Quốc, Trung Quốc, Nhật Bản tại các doanh nghiệp, dự án trong các khu công nghiệp\"}"
+}
+
+{
+  "text": "{\"trichyeu\": \" báo cáo tình hình lao động tại các doanh nghiệp trong các KCN, KKT trên địa bàn thành phố theo Công văn số 1787/UBND-VX ngày 15/3/2020 của UBND TP\"}"
+}
+
+{
+  "text": "{\"trichyeu\": \" thẩm tra quyết toán thu, chi ngân sách năm 2023\",\"nguoiky\": \" Chu Đức Anh\", \"nguoiduyet\": \" Trần Hồng Chính\" }"
+}
+
+
+{
+  "text": "{\"ngaybh_from\": \"2021-01-01\",\"ngaybh_to\": \"2021-01-31\" }"
+}
+
+
+
++ Khi câu hỏi về tổng số lượng, có bao nhiêu,tổng số,.... thì cho limit = 1000000
